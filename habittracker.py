@@ -55,33 +55,5 @@ class Habit:
             print(f'File not found, starting with empty habit list')
         except Exception as e:
             print(f'Error loading data: {e}')
-    
-    def streak_count(self, name):
-        #Tagastab järjestikuses päevad kuni tänaseni. Kui on päev vahel siis seda ei loe
-        if name not in self.habits:
-            print(f"Habit '{name}' does not exist.")
-            return 0
 
-        dates = self.habits[name]
-        if not dates:
-            print(f"No completion dates found for habit '{name}'.")
-            return 0
-
-        # Sort dates in descending order and parse them as datetime objects
-        dates = sorted((datetime.strptime(date, '%Y-%m-%d') for date in dates), reverse=True)
-
-        # Check if the latest date is today, else return 0
-        today = datetime.today()
-        if dates[0].date() != today.date():
-            return 0
-
-        # Count the consecutive days up to today
-        streak = 1
-        for i in range(1, len(dates)):
-            # Check if the current date is exactly one day before the previous date
-            if dates[i - 1] - dates[i] == timedelta(days=1):
-                streak += 1
-            else:
-                break
-
-        return streak
+            
