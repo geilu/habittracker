@@ -1,4 +1,30 @@
 {
-    "awesome habit(test)": [],
-    "not awesome habit": []
+    "awesome habit(test)": [
+        "November 13",
+        "November 12",
+        "November 9",
+        "November 11",
+        "November 10",
+        "November 14",
+        "November 8"
+    ],
+    "not awesome habit": [
+        "November 13",
+        "November 12",
+        "November 11",
+        "November 10",
+        "November 9",
+        "November 14",
+        "November 8"
+    ],
+    "test": [
+        "November 14",
+        "November 13",
+        "November 12",
+        "November 11",
+        "November 9",
+        "November 10",
+        "November 8",
+        "November 7"
+    ]
 }
