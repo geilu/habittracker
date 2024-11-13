@@ -35,7 +35,7 @@ class Habit:
         try:
             with open(filename, 'w') as f:
                 json.dump(self.habits, f, indent=4)
-            print(f'Data saved')
+            print(f'Data saved to {filename}')
         except Exception as e:
             print(f'Error saving data: {e}')
     
@@ -43,7 +43,7 @@ class Habit:
         try:
             with open(filename, 'r') as f:
                 self.habits = json.load(f)
-            print(f'Data loaded')
+            print(f'Data loaded from {filename}')
         except FileNotFoundError:
             print(f'File not found, starting with empty habit list')
         except Exception as e:
