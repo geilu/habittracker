@@ -26,10 +26,9 @@ def main():
         print('3. View habits')
         print('4. Save data')
         print('5. Delete habit')
-        print('6. Check streak')
-        print('7. Quit')
+        print('6. Quit')
 
-        choice = input('Choose an option(1-7): ')
+        choice = input('Choose an option(1-6): ')
 
         if choice == '1':
             habit_name = input('Enter name of habit: ')
@@ -45,9 +44,6 @@ def main():
             habit_name = input('Enter name of habit: ')
             tracker.delete_habit(habit_name)
         elif choice == '6':
-            habit_name = input('Enter name of habit: ')
-            tracker.streak_count(habit_name)
-        elif choice == '7':
             print('Goodbye!')
             break
         else:
