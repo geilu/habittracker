@@ -20,14 +20,19 @@ class HabitTrackerGUI(QMainWindow):
 
         self.main_layout = QVBoxLayout(self.central_widget)
 
-        #tabs
+        #tabid
         self.tabs = QTabWidget()
         self.habit_tab = QWidget()
-        self.tabs.addTab(self.habit_tab, 'Habits')
         self.manage_tab = QWidget()
+
+        self.tabs.addTab(self.habit_tab, 'Habits')
         self.tabs.addTab(self.manage_tab, 'Manage habits')
         self.main_layout.addWidget(self.tabs)
 
+        self.habit_tab_setup()
+        self.manage_tab_setup()
+
+    def habit_tab_setup(self): #habiti checkimise tabi setup
         self.habit_tab_layout = QHBoxLayout()
         self.habit_tab.setLayout(self.habit_tab_layout)
         self.habit_tab_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -47,13 +52,13 @@ class HabitTrackerGUI(QMainWindow):
         self.grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.generate_calendar_grid()
     
-    def generate_calendar_grid(self):
+    def generate_calendar_grid(self): #kalendrigridi tegemise funktsioon
         self.grid_layout.setSpacing(5)
         current_date = QDate.currentDate()
         days_in_month = current_date.daysInMonth()
         month_name = current_date.toString('MMMM')
 
-        month_label = QLabel(month_name)
+        month_label = QLabel(month_name) #ülesse kirja praegune kuu
         month_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         month_label.setStyleSheet('font-weight: bold; font-size: 16px;')
         self.grid_layout.addWidget(month_label, 0, 0, 1, days_in_month+1)
@@ -83,7 +88,60 @@ class HabitTrackerGUI(QMainWindow):
                 completion_button.clicked.connect(lambda _, h=habit, d=f'{day}': self.toggle_completion(h, d))
                 self.grid_layout.addWidget(completion_button, row, day)
     
-    def toggle_completion(self, habit_name, day):
+    def manage_tab_setup(self): #manage habits tabi setup
+        self.manage_tab_layout = QHBoxLayout()
+        self.manage_tab.setLayout(self.manage_tab_layout)
+
+        #vasak paneel(harjumuste list, lisa/kustuta(hetkel ainult lisamise nupp))
+        self.habit_list_layout = QVBoxLayout()
+        self.habit_list_widget = QListWidget()
+        self.habit_list_widget.setFixedWidth(200)
+        self.load_habits_into_list()
+        self.habit_list_widget.itemClicked.connect(self.display_habit_details)
+
+        #add habit button
+        self.add_habit_button = QPushButton('+')
+        self.add_habit_button.clicked.connect(self.tracker.add_habit)
+        
+        habit_button_layout = QHBoxLayout()
+        habit_button_layout.addWidget(self.add_habit_button)      
+
+        self.habit_list_layout.addWidget(QLabel('My Habits'))
+        self.habit_list_layout.addWidget(self.habit_list_widget)
+        self.habit_list_layout.addLayout(habit_button_layout)
+
+        self.manage_tab_layout.addLayout(self.habit_list_layout)
+
+        #parempoolne paneel(harjumuse detailid)
+        self.details_tab_box = QGroupBox("Habit Details")
+        self.details_tab_box.setStyleSheet("font-size: 14px;")
+        self.details_layout = QVBoxLayout(self.details_tab_box)
+        self.habit_name_label = QLabel('Habit Name')
+        self.frequency_label = QLabel('Frequency:')
+        self.progress_label = QLabel('Progress:')
+        self.description_label = QLabel('Description:')
+
+        self.details_layout.addWidget(self.habit_name_label)
+        self.details_layout.addWidget(self.frequency_label)
+        self.details_layout.addWidget(self.progress_label)
+        self.details_layout.addWidget(self.description_label)
+
+        self.manage_tab_layout.addWidget(self.details_tab_box)
+    
+    def load_habits_into_list(self):
+        self.habit_list_widget.clear()
+        for habit in self.tracker.habits.keys():
+            self.habit_list_widget.addItem(habit)
+    
+    def display_habit_details(self, item):
+        habit_name = item.text()
+        habit_data = self.tracker.habits.get(habit_name, {})
+        self.habit_name_label.setText(f'Habit: {habit_name}')
+        self.frequency_label.setText(f"Frequency: {habit_data.get('frequency', 'N/A')}")
+        self.progress_label.setText(f"Progress: {habit_data.get('progress', 'No data')}")
+        self.description_label.setText(f"Description: {habit_data.get('description', 'No description')}")
+    
+    def toggle_completion(self, habit_name, day): #checkida mis päevadel harjumus täidetud on
         date = f'{datetime.now().year}-{datetime.now().month}-{day}'
 
         if habit_name in self.tracker.habits:

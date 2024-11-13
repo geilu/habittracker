@@ -10,7 +10,7 @@
 #
 # mõningane eeskuju: Toggl, füüsilised habit trackeri päevikud
 #
-# Lisakommentaar (nt käivitusjuhend): right now cli saab kui runid main.py ja gui ver saab kui runid gui.py
+# Lisakommentaar (nt käivitusjuhend): hetkel CLI saab kui runid main.py ja GUI saab kui runid gui.py
 #
 ##################################################
 from habittracker import Habit
