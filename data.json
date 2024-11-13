@@ -1,4 +1,12 @@
 {
-    "awesome habit(test)": [],
-    "not awesome habit": []
+    "habits": {
+        "awesome habit(test)": {
+            "frequency": "daily",
+            "completion_dates": []
+        },
+        "not awesome habit": {
+            "frequency": "weekly",
+            "completion_dates": []
+        }
+    }
 }

@@ -46,10 +46,6 @@ class HabitTrackerGUI(QMainWindow):
         self.scroll_layout.addLayout(self.grid_layout)
         self.grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.generate_calendar_grid()
-
-        #save button
-        self.save_button = QPushButton()
-        self.save_button.clicked.connect(self.save_data)
     
     def generate_calendar_grid(self):
         self.grid_layout.setSpacing(5)
@@ -73,27 +69,34 @@ class HabitTrackerGUI(QMainWindow):
             habit_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.grid_layout.addWidget(habit_label, row, 0)
 
+            habit_data = self.tracker.habits[habit]
+            completion_dates = habit_data.get('completion_dates', [])
+
             for day in range(1, days_in_month+1):
                 completion_button = QPushButton()
                 completion_button.setFixedSize(30, 30)
                 completion_button.setCheckable(True)
 
-                date = f'{month_name} {day}'
-                habit_completion_dates = self.tracker.habits.get(habit)
-                if date in habit_completion_dates:
+                date = f'{datetime.now().year}-{datetime.now().month}-{day}'
+                if date in completion_dates:
                     completion_button.setChecked(True)
                 completion_button.clicked.connect(lambda _, h=habit, d=f'{day}': self.toggle_completion(h, d))
                 self.grid_layout.addWidget(completion_button, row, day)
     
     def toggle_completion(self, habit_name, day):
-        date = f'{self.current_month} {day}'
+        date = f'{datetime.now().year}-{datetime.now().month}-{day}'
 
-        if date in self.tracker.habits.get(habit_name, []):
-            self.tracker.habits[habit_name].remove(date)
-        else:
-            self.tracker.habits.setdefault(habit_name, []).append(date)
+        if habit_name in self.tracker.habits:
+            completion_dates = self.tracker.habits[habit_name].setdefault('completion_dates', [])
+
+            if date in completion_dates:
+                completion_dates.remove(date)
+            else:
+                completion_dates.append(date)
         
-        self.tracker.save_data()
+            self.tracker.save_data()
+        else:
+            print(f"Habit '{habit_name}' does not exist")
     
     def save_data(self):
         self.tracker.save_data()
