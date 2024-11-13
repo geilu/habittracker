@@ -6,7 +6,7 @@ class Habit:
         self.habits = {}
         self.filename = filename
     
-    def add_habit(self, name, frequency='daily'):
+    def add_habit(self, name, frequency='daily'): #harjumuse lisamise funktsioon
         if name not in self.habits:
             self.habits[name] = {
                 "frequency": frequency,
@@ -16,14 +16,14 @@ class Habit:
         else:
             print(f"Habit '{name}' already exists")
 
-    def delete_habit(self, name):
+    def delete_habit(self, name): #harjumuse kustutamise funktsioon
         if name in self.habits:
             del self.habits[name]
             print(f"Habit '{name}' has been deleted.")
         else:
             print(f"Habit '{name}' does not exist.")
     
-    def mark_habit(self, name):
+    def mark_habit(self, name): #märgi harjumus tehtuks
         if name in self.habits:
             today = datetime.today().strftime('%Y-%m-%d')
             if today not in self.habits[name]['completion_dates']:
@@ -34,7 +34,7 @@ class Habit:
         else:
             print(f"Habit '{name}' does not exist")
     
-    def list_habits(self):
+    def list_habits(self): #loendab harjumused
         if not self.habits:
             print('No habits added yet')
         else:
