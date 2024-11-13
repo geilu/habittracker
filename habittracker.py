@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class Habit:
     def __init__(self, filename='data.json'):
@@ -15,6 +15,13 @@ class Habit:
             print(f"Habit '{name}' added with frequency '{frequency}'")
         else:
             print(f"Habit '{name}' already exists")
+
+    def delete_habit(self, name):
+        if name in self.habits:
+            del self.habits[name]
+            print(f"Habit '{name}' has been deleted.")
+        else:
+            print(f"Habit '{name}' does not exist.")
     
     def mark_habit(self, name):
         if name in self.habits:
@@ -56,3 +63,5 @@ class Habit:
             print(f'File not found, starting with empty habit list')
         except Exception as e:
             print(f'Error loading data: {e}')
+
+            

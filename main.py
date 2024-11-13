@@ -25,9 +25,10 @@ def main():
         print('2. Mark habit complete')
         print('3. View habits')
         print('4. Save data')
-        print('5. Quit')
+        print('5. Delete habit')
+        print('6. Quit')
 
-        choice = input('Choose an option(1-5): ')
+        choice = input('Choose an option(1-6): ')
 
         if choice == '1':
             habit_name = input('Enter name of habit: ')
@@ -40,6 +41,9 @@ def main():
         elif choice == '4':
             tracker.save_data()
         elif choice == '5':
+            habit_name = input('Enter name of habit: ')
+            tracker.delete_habit(habit_name)
+        elif choice == '6':
             print('Goodbye!')
             break
         else:
