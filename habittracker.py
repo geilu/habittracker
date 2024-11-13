@@ -32,11 +32,10 @@ class Habit:
             print('No habits added yet')
         else:
             for habit, details in self.habits.items():
-                print(f'\nHabit: {habit}')
                 frequency = details.get('frequency')
                 completion_dates = details.get('completion_dates')
-                print(f"Habit: {habit} (Frequency: {frequency})")
-                print(f"Completed on: {', '.join() if completion_dates else 'No completions yet'}")
+                print(f"\nHabit: {habit} (Frequency: {frequency})")
+                print(f"Completed on: {completion_dates if completion_dates else 'No completions yet'}")
     
     def save_data(self):
         try:

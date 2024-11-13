@@ -2,11 +2,15 @@
     "habits": {
         "awesome habit(test)": {
             "frequency": "daily",
-            "completion_dates": []
+            "completion_dates": [],
+            "progress": "",
+            "description": "some cool habit"
         },
         "not awesome habit": {
             "frequency": "weekly",
-            "completion_dates": []
+            "completion_dates": [],
+            "progress": "",
+            "description": "some not so cool habit that i dont like"
         }
     }
 }
