@@ -167,5 +167,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-print(streak_count(self, "totally awesome habit(test)"))
