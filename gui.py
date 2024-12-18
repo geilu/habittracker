@@ -42,6 +42,7 @@ class HabitTrackerGUI(QMainWindow):
         #scroll area kus need kuupäevad jm on
         self.scroll_area = QScrollArea()
         self.scroll_widget = QWidget()
+        self.habit_list_widget = QListWidget()
         self.scroll_layout = QVBoxLayout(self.scroll_widget)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.scroll_widget)
@@ -53,7 +54,7 @@ class HabitTrackerGUI(QMainWindow):
         self.scroll_layout.addLayout(self.grid_layout)
         self.grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.generate_calendar_grid()
-    
+
     def generate_calendar_grid(self): #kalendrigridi tegemise funktsioon
         self.grid_layout.setSpacing(5)
         current_date = QDate.currentDate()
@@ -72,7 +73,11 @@ class HabitTrackerGUI(QMainWindow):
 
         for row, habit in enumerate(self.tracker.habits.keys(), start=2):
             habit_label = QLabel(habit)
-            habit_label.setFixedWidth(100)
+                    #muudab laiuse pikima teksti laiuseks
+            longest_string = max(self.tracker.habits.keys(), key=len)
+            label = QLabel(longest_string)
+            label.adjustSize()
+            habit_label.setFixedWidth(label.width() + 10)
             habit_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.grid_layout.addWidget(habit_label, row, 0)
 

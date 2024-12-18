@@ -5,6 +5,8 @@ QWidget {
 }
 QLabel {
     color: #333333;
+    font: 10pt;
+
 }
 #addButton {
     background-color: #9d3fb5;
@@ -31,7 +33,10 @@ QLabel {
 #completionButton {
     background-color: #f5d9fc;
     padding: 2px 6px;
+    border-width: 3px;
     border-radius: 3px;
+    border-style: solid;
+    border-color:rgb(230, 169, 216);
 }
 #completionButton:hover {
     background-color: #f1c4fc;
@@ -40,6 +45,7 @@ QLabel {
     background-color: #dea5ec;
     padding: 2px 6px;
     border-radius: 3px;
+    border-color:rgb(88, 65, 104) ;
 }
 #completionButton:enabled:checked:hover {
     background-color: #d08ee0;
