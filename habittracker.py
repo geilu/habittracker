@@ -56,4 +56,21 @@ class Habit:
         except Exception as e:
             print(f'Error loading data: {e}')
 
-            
+    def calculate_streak(self, name):
+
+        if name not in self.habits:
+            print(f"Habit '{name}' does not exist")
+            return 0
+        else:
+            for  dates in self.habits.items(name):
+                print(f"Completed on: {', '.join(dates) if dates else 'No completions yet'}")
+        streak = 1
+
+        for i in range(1, len(completion_dates)):
+            if completion_dates[i - 1] - completion_dates[i] == timedelta(days=1):
+                streak += 1
+            else:
+                break
+
+        print(f"Current streak for habit '{name}': {streak} days")
+        return streak
