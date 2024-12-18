@@ -81,29 +81,21 @@ class Habit:
             return 0
         completion_dates.sort()
 
-        streak = 1
-        max_streak = 1
+        streak = 0
+        max_streak = 0
 
         if self.habits[name]['frequency'] == 'Weekly':
-            current_week_start = None
-            for i in range(1, len(completion_dates)):
-                days_diff = (completion_dates[i] - completion_dates[i-1]).days
-
-                week_start = completion_dates[i-1] - timedelta(days=completion_dates[i-1].weekday())
-                week_end = week_start + timedelta(days=6)
-
-                if current_week_start is None or (completion_dates[i] - week_start).days > 6:
-                    streak = 1
-                    current_week_start = week_start
-                
-                if week_start <= completion_dates[i] <= week_end:
+            unique_weeks = sorted({date - timedelta(days=date.weekday()) for date in completion_dates})
+            for i in range(1, len(unique_weeks)):
+                if i == 0 or (unique_weeks[i] - unique_weeks[i-1]).days == 7:
                     streak += 1
                 else:
+                    max_streak = max(max_streak, streak)
                     streak = 1
-            max_streak = streak
+            max_streak = max(max_streak, streak)
+            print(f"Current streak for habit '{name}': {max_streak} week(s)")
                     
         else:
-            completion_dates.sort()
             streak = 1
             max_streak = 1
             for i in range(1, len(completion_dates)):
@@ -111,11 +103,9 @@ class Habit:
                 if days_diff == 1:
                     streak += 1
                 else:
+                    max_streak = max(streak, max_streak)
                     streak = 1
-            max_streak = streak
-
-        if self.habits[name]['frequency'] == 'Weekly':
-            print(f"Current streak for habit '{name}': {max_streak} week(s)")
-        else:
+            max_streak = max(streak, max_streak)
             print(f"Current streak for habit '{name}': {max_streak} day(s)")
+
         return max_streak
