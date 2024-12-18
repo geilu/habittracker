@@ -1,0 +1,58 @@
+QWidget {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background-color: #f5f5f5;
+}
+QLabel {
+    color: #333333;
+}
+#addButton {
+    background-color: #9d3fb5;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+#addButton:hover {
+    background-color: #732386;
+}
+#removeButton {
+    background-color: #9d3fb5;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+#removeButton:hover {
+    background-color: #732386;
+}
+#completionButton {
+    background-color: #f5d9fc;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+#completionButton:hover {
+    background-color: #f1c4fc;
+}
+#completionButton:enabled:checked {
+    background-color: #dea5ec;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+#completionButton:enabled:checked:hover {
+    background-color: #d08ee0;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+#habitList {
+    background-color: #fceeff;
+    border-style: solid;
+    border-color: #dea5ec;
+    border-radius: 3px;
+    border-width: 2px;
+}
+QScrollArea {
+    border: none;
+}

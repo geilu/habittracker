@@ -10,7 +10,8 @@
 #
 # mõningane eeskuju: Toggl, füüsilised habit trackeri päevikud
 #
-# Lisakommentaar (nt käivitusjuhend): hetkel CLI saab kui runid main.py ja GUI saab kui runid gui.py
+# Lisakommentaar (nt käivitusjuhend): hetkel CLI saab kui runid main.py ja GUI saab kui runid gui.py, gui jaoks installida PyQt6 ja matplotlib - terminalis "pip install matplotlib"
+#                                     ning "pip install pyqt6"
 #
 ##################################################
 from habittracker import Habit
