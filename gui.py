@@ -3,6 +3,8 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore import Qt, QDate
 from datetime import datetime
 from habittracker import Habit
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+import matplotlib.pyplot as plt
 
 class HabitTrackerGUI(QMainWindow):
     def __init__(self):
@@ -88,6 +90,13 @@ class HabitTrackerGUI(QMainWindow):
                 completion_button.clicked.connect(lambda _, h=habit, d=f'{day}': self.toggle_completion(h, d))
                 self.grid_layout.addWidget(completion_button, row, day)
     
+    def clear_calendar_grid(self): #kalendri clearimine
+        while self.grid_layout.count():
+            item = self.grid_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+    
     def manage_tab_setup(self): #manage habits tabi setup
         self.manage_tab_layout = QHBoxLayout()
         self.manage_tab.setLayout(self.manage_tab_layout)
@@ -99,12 +108,16 @@ class HabitTrackerGUI(QMainWindow):
         self.load_habits_into_list()
         self.habit_list_widget.itemClicked.connect(self.display_habit_details)
 
-        #add habit button
+        #add habit ja remove habit button
         self.add_habit_button = QPushButton('+')
-        self.add_habit_button.clicked.connect(self.tracker.add_habit)
+        self.add_habit_button.clicked.connect(self.add_habit_dialogue)
+
+        self.remove_habit_button = QPushButton('-')
+        self.remove_habit_button.clicked.connect(self.remove_selected_habit)
         
         habit_button_layout = QHBoxLayout()
-        habit_button_layout.addWidget(self.add_habit_button)      
+        habit_button_layout.addWidget(self.add_habit_button)
+        habit_button_layout.addWidget(self.remove_habit_button)
 
         self.habit_list_layout.addWidget(QLabel('My Habits'))
         self.habit_list_layout.addWidget(self.habit_list_widget)
@@ -116,14 +129,12 @@ class HabitTrackerGUI(QMainWindow):
         self.details_tab_box = QGroupBox("Habit Details")
         self.details_tab_box.setStyleSheet("font-size: 14px;")
         self.details_layout = QVBoxLayout(self.details_tab_box)
-        self.habit_name_label = QLabel('Habit Name')
-        self.frequency_label = QLabel('Frequency:')
-        self.progress_label = QLabel('Progress:')
-        self.description_label = QLabel('Description:')
+        self.habit_name_label = QLabel('Select a habit to view info')
+        self.frequency_label = QLabel('')
+        self.description_label = QLabel('')
 
         self.details_layout.addWidget(self.habit_name_label)
         self.details_layout.addWidget(self.frequency_label)
-        self.details_layout.addWidget(self.progress_label)
         self.details_layout.addWidget(self.description_label)
 
         self.manage_tab_layout.addWidget(self.details_tab_box)
@@ -134,12 +145,28 @@ class HabitTrackerGUI(QMainWindow):
             self.habit_list_widget.addItem(habit)
     
     def display_habit_details(self, item):
+        if not item:
+            self.reset_habit_details()
+            return
+        
         habit_name = item.text()
         habit_data = self.tracker.habits.get(habit_name, {})
         self.habit_name_label.setText(f'Habit: {habit_name}')
         self.frequency_label.setText(f"Frequency: {habit_data.get('frequency', 'N/A')}")
-        self.progress_label.setText(f"Progress: {habit_data.get('progress', 'No data')}")
         self.description_label.setText(f"Description: {habit_data.get('description', 'No description')}")
+
+        completion_dates = habit_data.get('completion_dates', [])
+        frequency = habit_data.get('frequency', 'Daily')
+        self.habit_progress_graph(completion_dates, frequency)
+    
+    def reset_habit_details(self):
+        self.habit_name_label.setText('Select a habit to view info')
+        self.frequency_label.setText('')
+        self.description_label.setText('')
+
+        if hasattr(self, 'canvas') and self.canvas:
+            self.details_layout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
     
     def toggle_completion(self, habit_name, day): #checkida mis päevadel harjumus täidetud on
         date = f'{datetime.now().year}-{datetime.now().month}-{day}'
@@ -156,8 +183,132 @@ class HabitTrackerGUI(QMainWindow):
         else:
             print(f"Habit '{habit_name}' does not exist")
     
+    def add_habit_dialogue(self):
+        dialogue = AddHabitDialogue(self)
+        if dialogue.exec():
+            habit_name, frequency, description = dialogue.get_habit_info()
+            if habit_name:
+                self.tracker.add_habit(habit_name, frequency)
+                if description:
+                    self.tracker.habits[habit_name]['description'] = description
+                self.tracker.save_data()
+                self.load_habits_into_list()
+
+                self.clear_calendar_grid()
+                self.generate_calendar_grid()
+    
+    def remove_selected_habit(self):
+        selected_item = self.habit_list_widget.currentItem()
+        if selected_item:
+            habit_name = selected_item.text()
+
+            confirm = QMessageBox.question(self, 'Confirm', f"Are you sure you want to delete the habit '{habit_name}'?",
+                                           QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            if confirm == QMessageBox.StandardButton.Yes:
+                self.tracker.delete_habit(habit_name)
+                self.tracker.save_data()
+                self.load_habits_into_list()
+
+                self.clear_calendar_grid()
+                self.generate_calendar_grid()
+
+                self.statusBar().showMessage(f"'{habit_name}' has been removed.", 5000)
+
+                if self.habit_list_widget.count() == 0:
+                    self.reset_habit_details()
+        else:
+            QMessageBox.warning(self, 'No Habit Selected', 'Please select a habit to remove!')
+        
+    def habit_progress_graph(self, completion_dates, frequency='Daily'):
+        if hasattr(self, 'canvas') and self.canvas:
+            self.details_layout.removeWidget(self.canvas)
+            self.canvas.deleteLater()
+        
+        current_date = QDate.currentDate()
+        days_in_month = current_date.daysInMonth()
+        weeks_in_month = (days_in_month + current_date.dayOfWeek() - 1) // 7
+        completed_days = len(set(datetime.strptime(date, '%Y-%m-%d').day for date in completion_dates))
+
+        if frequency == 'Daily':
+            completed = completed_days
+            target = days_in_month
+        elif frequency == 'Weekly':
+            completed_weeks = len(set((datetime.strptime(date, '%Y-%m-%d').day - 1)//7 for date in completion_dates))
+            completed = completed_weeks
+            target = weeks_in_month
+        else:
+            completed = 0
+            target = 1
+        
+        remaining = target - completed
+        remaining = max(0, remaining) #et ei oleks mingit negatiivset
+
+        sizes = [completed, remaining]
+        labels = ['Completed', 'Remaining']
+        colors = ['mediumorchid', 'lightgray']
+
+        fig1, ax1 = plt.subplots(figsize=(3, 3))
+        ax1.pie(
+            sizes, labels=labels, autopct='%1.1f%%', startangle=90,
+            colors=colors, textprops={'fontsize': 10}
+        )
+        ax1.set_title(f'Habit Progress This Month (Frequency: {frequency})', fontsize=12)
+
+        self.canvas = FigureCanvas(fig1)
+        self.details_layout.addWidget(self.canvas)
+        self.canvas.draw()
+
+        plt.close(fig1)
+    
     def save_data(self):
         self.tracker.save_data()
+
+class AddHabitDialogue(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setWindowTitle('Add Habit')
+        self.setGeometry(100, 100, 300, 200)
+
+        layout = QVBoxLayout()
+
+        self.habit_name_input = QLineEdit(self)
+        self.habit_name_input.setPlaceholderText('Enter habit name')
+        layout.addWidget(QLabel('Habit Name:'))
+        layout.addWidget(self.habit_name_input)
+
+        self.frequency_combo = QComboBox(self)
+        self.frequency_combo.addItems(['Daily', 'Weekly'])
+        layout.addWidget(QLabel('Frequency:'))
+        layout.addWidget(self.frequency_combo)
+
+        self.description_input = QTextEdit(self)
+        self.description_input.setPlaceholderText('Enter description (Optional)')
+        layout.addWidget(QLabel('Description:'))
+        layout.addWidget(self.description_input)
+
+        button_layout = QHBoxLayout()
+        add_button = QPushButton('Add', self)
+        add_button.clicked.connect(self.accept)
+        
+        cancel_button = QPushButton('Cancel', self)
+        cancel_button.clicked.connect(self.reject)
+
+        button_layout.addWidget(add_button)
+        button_layout.addWidget(cancel_button)
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+    
+    def get_habit_info(self):
+        habit_name = self.habit_name_input.text().strip()
+        frequency = self.frequency_combo.currentText()
+        description = self.description_input.toPlainText().strip()
+
+        if not habit_name:
+            return None, None, None
+        
+        return habit_name, frequency, description
 
 def main():
     app = QApplication(sys.argv)

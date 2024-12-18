@@ -6,7 +6,7 @@ class Habit:
         self.habits = {}
         self.filename = filename
     
-    def add_habit(self, name, frequency='daily'): #harjumuse lisamise funktsioon
+    def add_habit(self, name, frequency='Daily'): #harjumuse lisamise funktsioon
         if name not in self.habits:
             self.habits[name] = {
                 "frequency": frequency,
