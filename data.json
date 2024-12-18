@@ -1,44 +1,26 @@
 {
-    "awesome habit(test)": [
-        "November 13",
-        "November 12",
-        "November 9",
-        "November 11",
-        "November 10",
-        "November 14",
-        "November 8",
-        "December 1",
-        "December 2",
-        "December 3",
-        "December 6",
-        "December 7",
-        "December 13",
-        "December 14"
-    ],
-    "not awesome habit": [
-        "November 13",
-        "November 12",
-        "November 11",
-        "November 10",
-        "November 9",
-        "November 14",
-        "November 8"
-    ],
-    "test": [
-        "November 14",
-        "November 13",
-        "November 12",
-        "November 11",
-        "November 9",
-        "November 10",
-        "November 8",
-        "November 7",
-        "December 1",
-        "December 2",
-        "December 3",
-        "December 13",
-        "December 14",
-        "December 15",
-        "December 16"
-    ]
+    "awesome habit(test)": {
+        "frequency": "Daily",
+        "completion_dates": [
+            "2024-12-3",
+            "2024-12-8",
+            "2024-12-15",
+            "2024-12-2",
+            "2024-12-4"
+        ],
+        "description": "abc"
+    },
+    "not awesome habit": {
+        "frequency": "Weekly",
+        "completion_dates": [
+            "2024-12-1",
+            "2024-12-10"
+        ],
+        "description": "some not so cool habit that i dont like"
+    },
+    "testest": {
+        "frequency": "Daily",
+        "completion_dates": [],
+        "description": ""
+    }
 }
