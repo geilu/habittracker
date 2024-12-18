@@ -42,6 +42,7 @@ class HabitTrackerGUI(QMainWindow):
         #scroll area kus need kuupäevad jm on
         self.scroll_area = QScrollArea()
         self.scroll_widget = QWidget()
+        self.habit_list_widget = QListWidget()
         self.scroll_layout = QVBoxLayout(self.scroll_widget)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setWidget(self.scroll_widget)
@@ -53,7 +54,7 @@ class HabitTrackerGUI(QMainWindow):
         self.scroll_layout.addLayout(self.grid_layout)
         self.grid_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.generate_calendar_grid()
-    
+
     def generate_calendar_grid(self): #kalendrigridi tegemise funktsioon
         self.grid_layout.setSpacing(5)
         current_date = QDate.currentDate()
@@ -72,7 +73,11 @@ class HabitTrackerGUI(QMainWindow):
 
         for row, habit in enumerate(self.tracker.habits.keys(), start=2):
             habit_label = QLabel(habit)
-            habit_label.setFixedWidth(100)
+                    #muudab laiuse pikima teksti laiuseks
+            longest_string = max(self.tracker.habits.keys(), key=len)
+            label = QLabel(longest_string)
+            label.adjustSize()
+            habit_label.setFixedWidth(label.width() + 10)
             habit_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
             self.grid_layout.addWidget(habit_label, row, 0)
 
@@ -83,6 +88,7 @@ class HabitTrackerGUI(QMainWindow):
                 completion_button = QPushButton()
                 completion_button.setFixedSize(30, 30)
                 completion_button.setCheckable(True)
+                completion_button.setObjectName('completionButton')
 
                 date = f'{datetime.now().year}-{datetime.now().month}-{day}'
                 if date in completion_dates:
@@ -104,6 +110,7 @@ class HabitTrackerGUI(QMainWindow):
         #vasak paneel(harjumuste list, lisa/kustuta(hetkel ainult lisamise nupp))
         self.habit_list_layout = QVBoxLayout()
         self.habit_list_widget = QListWidget()
+        self.habit_list_widget.setObjectName('habitList')
         self.habit_list_widget.setFixedWidth(200)
         self.load_habits_into_list()
         self.habit_list_widget.itemClicked.connect(self.display_habit_details)
@@ -111,9 +118,11 @@ class HabitTrackerGUI(QMainWindow):
         #add habit ja remove habit button
         self.add_habit_button = QPushButton('+')
         self.add_habit_button.clicked.connect(self.add_habit_dialogue)
+        self.add_habit_button.setObjectName('addButton') #object name stylesheeti jaoks
 
         self.remove_habit_button = QPushButton('-')
         self.remove_habit_button.clicked.connect(self.remove_selected_habit)
+        self.remove_habit_button.setObjectName('removeButton')
         
         habit_button_layout = QHBoxLayout()
         habit_button_layout.addWidget(self.add_habit_button)
@@ -126,10 +135,10 @@ class HabitTrackerGUI(QMainWindow):
         self.manage_tab_layout.addLayout(self.habit_list_layout)
 
         #parempoolne paneel(harjumuse detailid)
-        self.details_tab_box = QGroupBox("Habit Details")
-        self.details_tab_box.setStyleSheet("font-size: 14px;")
+        self.details_tab_box = QGroupBox(f'Habit Details')
+        self.details_tab_box.setStyleSheet('font-size: 18px;')
         self.details_layout = QVBoxLayout(self.details_tab_box)
-        self.habit_name_label = QLabel('Select a habit to view info')
+        self.habit_name_label = QLabel(f'<b>Select a habit to view info</b>')
         self.frequency_label = QLabel('')
         self.description_label = QLabel('')
 
@@ -151,16 +160,16 @@ class HabitTrackerGUI(QMainWindow):
         
         habit_name = item.text()
         habit_data = self.tracker.habits.get(habit_name, {})
-        self.habit_name_label.setText(f'Habit: {habit_name}')
-        self.frequency_label.setText(f"Frequency: {habit_data.get('frequency', 'N/A')}")
-        self.description_label.setText(f"Description: {habit_data.get('description', 'No description')}")
+        self.habit_name_label.setText(f'<b>Habit:</b> {habit_name}')
+        self.frequency_label.setText(f"<b>Frequency:</b> {habit_data.get('frequency', 'N/A')}")
+        self.description_label.setText(f"<b>Description:</b> {habit_data.get('description', 'No description')}")
 
         completion_dates = habit_data.get('completion_dates', [])
         frequency = habit_data.get('frequency', 'Daily')
         self.habit_progress_graph(completion_dates, frequency)
     
     def reset_habit_details(self):
-        self.habit_name_label.setText('Select a habit to view info')
+        self.habit_name_label.setText('<b>Select a habit to view info</b>')
         self.frequency_label.setText('')
         self.description_label.setText('')
 
@@ -310,8 +319,20 @@ class AddHabitDialogue(QDialog):
         
         return habit_name, frequency, description
 
+def load_stylesheet(filepath):
+    try:
+        with open(filepath, 'r') as f:
+            return f.read()
+    except FileNotFoundError:
+        print(f'Stylesheet file not found: {filepath}')
+        return ''
+
 def main():
     app = QApplication(sys.argv)
+
+    stylesheet = load_stylesheet('styles.qss')
+    app.setStyleSheet(stylesheet)
+
     window = HabitTrackerGUI()
     window.show()
     sys.exit(app.exec())
