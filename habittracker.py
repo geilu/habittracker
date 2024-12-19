@@ -6,13 +6,14 @@ class Habit:
         self.habits = {}
         self.filename = filename
     
-    def add_habit(self, name, frequency='Daily'): #harjumuse lisamise funktsioon
+    def add_habit(self, name, frequency='Daily'):
         if name not in self.habits:
             self.habits[name] = {
-                "frequency": frequency,
-                "completion_dates": []
+                'frequency': frequency,
+                'completion_dates': [],
+                'description': ''
             }
-            print(f"Habit '{name}' added with frequency '{frequency}'")
+            print(f"Habit '{name}' added")
         else:
             print(f"Habit '{name}' already exists")
 
@@ -38,16 +39,24 @@ class Habit:
         if not self.habits:
             print('No habits added yet')
         else:
-            for habit, details in self.habits.items():
-                frequency = details.get('frequency')
-                completion_dates = details.get('completion_dates')
-                print(f"\nHabit: {habit} (Frequency: {frequency})")
-                print(f"Completed on: {completion_dates if completion_dates else 'No completions yet'}")
+            for name, data in self.habits.items():
+                print(f'\nHabit: {name}')
+                print(f"Frequency: {data['frequency']}")
+                if data['completion_dates']:
+                    completion_dates = [datetime.strptime(date, '%Y-%m-%d') for date in data['completion_dates']]
+                    completion_dates.sort()
+
+                    sorted_dates = [date.strftime('%Y-%m-%d') for date in completion_dates]
+                    print(f"Completed on: {', '.join(sorted_dates)}")
+                else:
+                    print('Completed on: No completions yet')
+                print(f"Description: {data['description']}")
+
     
     def save_data(self):
         try:
             with open(self.filename, 'w') as f:
-                json.dump({"habits": self.habits}, f, indent=4)
+                json.dump(self.habits, f, indent=4, sort_keys=False)
             print(f'Data saved to {self.filename}')
         except Exception as e:
             print(f'Error saving data: {e}')
@@ -63,4 +72,42 @@ class Habit:
         except Exception as e:
             print(f'Error loading data: {e}')
 
-            
+    def calculate_streak(self, name):
+
+        if name not in self.habits:
+            print(f"Habit '{name}' does not exist")
+            return 0
+        completion_dates = [datetime.strptime(date, '%Y-%m-%d') for date in self.habits[name]['completion_dates']]
+        if not completion_dates:
+            print(f"No completions yet for habit '{name}'")
+            return 0
+        completion_dates.sort()
+
+        streak = 0
+        max_streak = 0
+
+        if self.habits[name]['frequency'] == 'Weekly':
+            unique_weeks = sorted({date - timedelta(days=date.weekday()) for date in completion_dates})
+            for i in range(1, len(unique_weeks)):
+                if i == 0 or (unique_weeks[i] - unique_weeks[i-1]).days == 7:
+                    streak += 1
+                else:
+                    max_streak = max(max_streak, streak)
+                    streak = 1
+            max_streak = max(max_streak, streak)
+            print(f"Current streak for habit '{name}': {max_streak} week(s)")
+                    
+        else:
+            streak = 1
+            max_streak = 1
+            for i in range(1, len(completion_dates)):
+                days_diff = (completion_dates[i] - completion_dates[i-1]).days
+                if days_diff == 1:
+                    streak += 1
+                else:
+                    max_streak = max(streak, max_streak)
+                    streak = 1
+            max_streak = max(streak, max_streak)
+            print(f"Current streak for habit '{name}': {max_streak} day(s)")
+
+        return max_streak
