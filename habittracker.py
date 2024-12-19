@@ -6,7 +6,7 @@ class Habit:
         self.habits = {}
         self.filename = filename
     
-    def add_habit(self, name, frequency='Daily'):
+    def add_habit(self, name, frequency='Daily'): #harjumuse lisamise funktsioon
         if name not in self.habits:
             self.habits[name] = {
                 'frequency': frequency,
@@ -72,7 +72,7 @@ class Habit:
         except Exception as e:
             print(f'Error loading data: {e}')
 
-    def calculate_streak(self, name):
+    def calculate_streak(self, name): #streaki arvutamise funktsioon
 
         if name not in self.habits:
             print(f"Habit '{name}' does not exist")

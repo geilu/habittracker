@@ -73,7 +73,7 @@ class HabitTrackerGUI(QMainWindow):
 
         for row, habit in enumerate(self.tracker.habits.keys(), start=2):
             habit_label = QLabel(habit)
-                    #muudab laiuse pikima teksti laiuseks
+            #muudab laiuse pikima teksti laiuseks
             longest_string = max(self.tracker.habits.keys(), key=len)
             label = QLabel(longest_string)
             label.adjustSize()
@@ -128,6 +128,7 @@ class HabitTrackerGUI(QMainWindow):
         habit_button_layout.addWidget(self.add_habit_button)
         habit_button_layout.addWidget(self.remove_habit_button)
 
+        #harjumuste list
         self.habit_list_layout.addWidget(QLabel('My Habits'))
         self.habit_list_layout.addWidget(self.habit_list_widget)
         self.habit_list_layout.addLayout(habit_button_layout)
@@ -148,12 +149,12 @@ class HabitTrackerGUI(QMainWindow):
 
         self.manage_tab_layout.addWidget(self.details_tab_box)
     
-    def load_habits_into_list(self):
+    def load_habits_into_list(self): #laeb harjumused listi
         self.habit_list_widget.clear()
         for habit in self.tracker.habits.keys():
             self.habit_list_widget.addItem(habit)
     
-    def display_habit_details(self, item):
+    def display_habit_details(self, item): #detailide all näitab harjumuse nime, sagedust ja progressi
         if not item:
             self.reset_habit_details()
             return
@@ -168,7 +169,7 @@ class HabitTrackerGUI(QMainWindow):
         frequency = habit_data.get('frequency', 'Daily')
         self.habit_progress_graph(completion_dates, frequency)
     
-    def reset_habit_details(self):
+    def reset_habit_details(self): #resetib detailide osa
         self.habit_name_label.setText('<b>Select a habit to view info</b>')
         self.frequency_label.setText('')
         self.description_label.setText('')
@@ -192,7 +193,7 @@ class HabitTrackerGUI(QMainWindow):
         else:
             print(f"Habit '{habit_name}' does not exist")
     
-    def add_habit_dialogue(self):
+    def add_habit_dialogue(self): #dialoogi kasti ilmumine kui harjumust lisada
         dialogue = AddHabitDialogue(self)
         if dialogue.exec():
             habit_name, frequency, description = dialogue.get_habit_info()
@@ -206,7 +207,7 @@ class HabitTrackerGUI(QMainWindow):
                 self.clear_calendar_grid()
                 self.generate_calendar_grid()
     
-    def remove_selected_habit(self):
+    def remove_selected_habit(self): #harjumuse eemaldamise nupu funktsioon
         selected_item = self.habit_list_widget.currentItem()
         if selected_item:
             habit_name = selected_item.text()
@@ -221,14 +222,14 @@ class HabitTrackerGUI(QMainWindow):
                 self.clear_calendar_grid()
                 self.generate_calendar_grid()
 
-                self.statusBar().showMessage(f"'{habit_name}' has been removed.", 5000)
+                self.statusBar().showMessage(f"'{habit_name}' has been removed.", 5000) #näitab all ääres, et harjumus on eemaldatud
 
                 if self.habit_list_widget.count() == 0:
                     self.reset_habit_details()
         else:
             QMessageBox.warning(self, 'No Habit Selected', 'Please select a habit to remove!')
         
-    def habit_progress_graph(self, completion_dates, frequency='Daily'):
+    def habit_progress_graph(self, completion_dates, frequency='Daily'): #harjumuse progressi graafik
         if hasattr(self, 'canvas') and self.canvas:
             self.details_layout.removeWidget(self.canvas)
             self.canvas.deleteLater()
@@ -272,7 +273,7 @@ class HabitTrackerGUI(QMainWindow):
     def save_data(self):
         self.tracker.save_data()
 
-class AddHabitDialogue(QDialog):
+class AddHabitDialogue(QDialog): #harjumuse dialoogi kast
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -309,7 +310,7 @@ class AddHabitDialogue(QDialog):
 
         self.setLayout(layout)
     
-    def get_habit_info(self):
+    def get_habit_info(self): #dialoogi kasti jaoks harjumuse info kogumine
         habit_name = self.habit_name_input.text().strip()
         frequency = self.frequency_combo.currentText()
         description = self.description_input.toPlainText().strip()
@@ -319,7 +320,7 @@ class AddHabitDialogue(QDialog):
         
         return habit_name, frequency, description
 
-def load_stylesheet(filepath):
+def load_stylesheet(filepath): #stylesheeti faili laadimine
     try:
         with open(filepath, 'r') as f:
             return f.read()

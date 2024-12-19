@@ -1,26 +1,37 @@
 {
     "habits": {
-        "awesome habit(test)": {
+        "test1(daily)": {
             "frequency": "Daily",
             "completion_dates": [
                 "2024-12-1",
+                "2024-12-2",
                 "2024-12-3",
+                "2024-12-6",
                 "2024-12-7",
-                "2024-12-9"
+                "2024-12-8",
+                "2024-12-9",
+                "2024-12-10",
+                "2024-12-11",
+                "2024-12-14",
+                "2024-12-15",
+                "2024-12-13",
+                "2024-12-17"
             ],
-            "description": "abc"
+            "description": "siin on minu igap\u00e4evane harjumus mida teen iga p\u00e4ev!"
         },
-        "not awesome habit": {
+        "test2(weekly)": {
             "frequency": "Weekly",
             "completion_dates": [
-                "2024-12-3"
+                "2024-12-2",
+                "2024-12-9",
+                "2024-12-15"
             ],
-            "description": "some not so cool habit that i dont like"
+            "description": "siin on minu igan\u00e4dalane harjumus mida teen iga n\u00e4dal!"
         },
-        "test": {
-            "frequency": "Weekly",
+        "test3": {
+            "frequency": "Daily",
             "completion_dates": [],
-            "description": "bla bla bla"
+            "description": ""
         }
     }
 }
