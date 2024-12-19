@@ -58,6 +58,31 @@ QLabel {
     border-color: #dea5ec;
     border-radius: 3px;
     border-width: 2px;
+    outline: none;
+}
+QListWidget::item {
+    font-weight: normal;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #dda0dd;
+    padding: 5px;
+}
+QListWidget::item:hover {
+    background-color: #f0d7ff;
+    border-style: solid;
+    border-color: #8d54a3;
+    border-width: 1px;
+}
+QListWidget::item:selected {
+    font-weight: bold;
+    background-color:rgb(220, 164, 235);
+    color: #333333;
+    border-style: solid;
+    border-color: #b976d3;
+    border-width: 2px;
+}
+QListWidget::item:selected:focus {
+    outline: none;
 }
 QScrollArea {
     border: none;
